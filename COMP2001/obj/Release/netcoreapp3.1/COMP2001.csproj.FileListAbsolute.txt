@@ -46,3 +46,4 @@ C:\Users\firem\source\repos\COMP2001\COMP2001\obj\Release\netcoreapp3.1\COMP2001
 C:\Users\firem\source\repos\COMP2001\COMP2001\obj\Release\netcoreapp3.1\COMP2001.dll
 C:\Users\firem\source\repos\COMP2001\COMP2001\obj\Release\netcoreapp3.1\COMP2001.pdb
 C:\Users\firem\source\repos\COMP2001\COMP2001\obj\Release\netcoreapp3.1\COMP2001.genruntimeconfig.cache
+C:\Users\firem\source\repos\COMP2001\COMP2001\obj\Release\netcoreapp3.1\COMP2001.csproj.AssemblyReference.cache

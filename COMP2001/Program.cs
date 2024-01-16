@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.Extensions.Configuration;
 
 public class Program
 {
@@ -31,6 +31,13 @@ public class Program
 
 public class Startup
 {
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     // Configures the services used by the application.
     public void ConfigureServices(IServiceCollection services)
     {
@@ -83,6 +90,13 @@ public class Startup
     [Route("api")]
     public class AuthController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
+
+        public AuthController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [HttpPost("login")]
         [AllowAnonymous]
         public IActionResult Login([FromBody] LoginRequest request)
@@ -103,10 +117,29 @@ public class Startup
 
         private bool IsValidCredentials(string userName, string email, string password)
         {
-            // Implement your authentication logic here (e.g., check against database)
-            // Return true if credentials are valid, false otherwise
-            // This is a placeholder, replace it with your actual logic
-            return true;
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                // SQL query to check if credentials are valid.
+                string query = "SELECT COUNT(*) FROM Users WHERE (UserName = @UserName OR Email = @Email) AND Password = @Password";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Set parameters for the SQL query.
+                    command.Parameters.AddWithValue("@UserName", userName);
+                    command.Parameters.AddWithValue("@Email", email);
+                    command.Parameters.AddWithValue("@Password", password);
+
+                    // Execute the query.
+                    int count = (int)command.ExecuteScalar();
+
+                    // If count is greater than 0, credentials are valid.
+                    return count > 0;
+                }
+            }
         }
     }
 
@@ -312,7 +345,7 @@ public class Startup
             }
         }
 
-        // Deletes a user profile asynchronously from the database by ID.
+        // Deletes a user profile
         public async Task<bool> DeleteProfileAsync(int id)
         {
             try
